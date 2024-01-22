@@ -1,0 +1,10 @@
+Booking Pattern and Lead Time
+Question : How does the lead time booking and arrival vary across diff type of meal (meal column) and market segments ( market_segment column)
+Reasoning: By having the lead time pattern, Meal and market segments can be associated and marketting and operational planning can be strategiyes accordingly.
+
+Lead Time Impact on cancellation
+How does the lead time - number of days and arrival , correlate with the likehood of cancellation 
+Reasoning: By understanding the relationship between lead time and cancellation , you can gain insights into whether customer are more likehood to cencel reservation made well in advance or closure to the avival date so that marketting and operational planning can be strategiyes accordingly
+Customer preference across market segment
+How do cusomer prefernce like booking changes, special request etc. vary across different market segment like online travel agency and corporate. 
+Reasoning:Exploring how customer behaviour differs among market segment can guide targets market segment and improves Services based on unique needs and preference of each segment.
