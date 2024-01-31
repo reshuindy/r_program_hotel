@@ -1,0 +1,107 @@
+---
+title: "Week 2 Data Dive- Summaries"
+author: "Reshu Gupta"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+1. Initial setup and Configure the data set.</br>
+2. Load the data set file in variable hotel_data files
+3. Data set - Hotels : This data comes from an open hotel booking demand dataset from Antonio, Almeida and Nunes.
+```{r setup, include=FALSE}
+library(ggplot2)
+knitr::opts_chunk$set(echo = TRUE)
+#Read data set.
+hotel_data <- read.csv('C:/Users/mohit/OneDrive/Desktop/workspaceR/data/hotels.csv')
+```
+
+
+This section is about the Numeric summary for two columns - lead_time and stays_in_weekend_nights.
+
+```{r numeric_summary}
+numeric_summary <- summary(hotel_data[c('lead_time', 'stays_in_weekend_nights')])
+
+```
+This section is about the display of Numeric summary of two columns - lead_time and stays_in_weekend_nights.
+```{r display_numeric_summary}
+numeric_summary
+
+```
+This section is about to calculate the unique values and counts for categorical columns -meal and market_segment.
+
+```{r calculate_unique_values}
+categorical_summary1 <- table(hotel_data$meal)
+categorical_summary2 <- table(hotel_data$market_segment)
+
+```
+This section is about to display the  unique values and counts for categorical columns -meal and market_segment.
+
+```{r display_unique_values}
+categorical_summary1
+categorical_summary2
+
+```
+This section is about to calculate and display the aggregating lead time impact on cancellations
+
+```{r aggregating_lead_time}
+lead_time_cancellation_aggregate <- aggregate(is_canceled ~ lead_time, data = hotel_data, FUN = function(x) mean(x == 1))
+lead_time_cancellation_aggregate
+
+```
+This section is about to calculate and display the aggregating effect of meal type on customer satisfaction.
+
+```{r aggregating_meal_type}
+meal_satisfaction_aggregate <- aggregate(adr ~ meal, data = hotel_data, FUN = mean)
+meal_satisfaction_aggregate
+
+```
+
+
+## Including Plot #1
+
+This section is about the graph for the 'Lead Time Distribution'
+
+```{r lead_time_plot, echo=FALSE}
+
+lead_time_plot <- ggplot(hotel_data, aes(x = lead_time)) +
+  geom_histogram(binwidth = 50, fill = "#66c2a5", color = "#1f78b4", alpha = 0.7) +
+  labs(title = "Lead Time Distribution",
+       x = "Lead Time (days)",
+       y = "Frequency") +
+  theme_minimal()
+# Display the lead_time_plot plot
+lead_time_plot
+
+```
+
+
+<br>## Including Plot #2
+
+This section is about the graph for the 'Correlation between Lead Time and Cancellations'
+```{r }
+
+lead_time_cancellation_plot <- ggplot(hotel_data, aes(x = lead_time, fill = factor(is_canceled))) +
+  geom_density(alpha = 0.7) +
+  labs(title = "Correlation between Lead Time and Cancellations",
+       x = "Lead Time (days)",
+       y = "Density",
+       fill = "Cancellation") +
+  theme_minimal()
+
+# Display the lead_time_cancellation_plot plot
+lead_time_cancellation_plot
+
+
+```
+
+##<b>Booking Pattern and Lead Time </b> <br>
+# Question : How does the lead time booking and arrival vary across diff type of meal (meal column) and market segments ( market_segment column)<br>
+# Reasoning: By having the lead time pattern, Meal and market segments can be associated and marketting and operational planning can be strategiyes accordingly.<br>
+##<b>Lead Time Impact on cancellation</b><br>
+# How does the lead time - number of days and arrival , correlate with the likehood of cancellation<br>
+# Reasoning: By understanding the relationship between lead time and cancellation , you can gain insights into whether customer are more likehood to cencel reservation made well in advance or closure to the avival date so that marketting and operational planning can be strategiyes accordingly.<br>
+## <b>Customer preference across market segment</b><br>
+# How do cusomer prefernce like booking changes, special request etc. vary across different market segment like online travel agency and corporate.<br>
+# Reasoning:Exploring how customer behaviour differs among market segment can guide targets market segment and improves Services based on unique needs and preference of each segment.<br>
+
+<b>Thank You!!!</b>
