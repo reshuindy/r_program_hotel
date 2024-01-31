@@ -1,0 +1,756 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Week 2 Data Dive- Summaries},
+  pdfauthor={Reshu Gupta},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Week 2 Data Dive- Summaries}
+\author{Reshu Gupta}
+\date{2024-01-30}
+
+\begin{document}
+\maketitle
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Initial setup and Configure the data set.
+\item
+  Load the data set file in variable hotel\_data files
+\item
+  Data set - Hotels : This data comes from an open hotel booking demand
+  dataset from Antonio, Almeida and Nunes.
+\end{enumerate}
+
+This section is about the Numeric summary for two columns - lead\_time
+and stays\_in\_weekend\_nights.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{numeric\_summary }\OtherTok{\textless{}{-}} \FunctionTok{summary}\NormalTok{(hotel\_data[}\FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}lead\_time\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}stays\_in\_weekend\_nights\textquotesingle{}}\NormalTok{)])}
+\end{Highlighting}
+\end{Shaded}
+
+This section is about the display of Numeric summary of two columns -
+lead\_time and stays\_in\_weekend\_nights.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{numeric\_summary}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    lead_time   stays_in_weekend_nights
+##  Min.   :  0   Min.   : 0.0000        
+##  1st Qu.: 18   1st Qu.: 0.0000        
+##  Median : 69   Median : 1.0000        
+##  Mean   :104   Mean   : 0.9276        
+##  3rd Qu.:160   3rd Qu.: 2.0000        
+##  Max.   :737   Max.   :19.0000
+\end{verbatim}
+
+This section is about to calculate the unique values and counts for
+categorical columns -meal and market\_segment.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{categorical\_summary1 }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(hotel\_data}\SpecialCharTok{$}\NormalTok{meal)}
+\NormalTok{categorical\_summary2 }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(hotel\_data}\SpecialCharTok{$}\NormalTok{market\_segment)}
+\end{Highlighting}
+\end{Shaded}
+
+This section is about to display the unique values and counts for
+categorical columns -meal and market\_segment.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{categorical\_summary1}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##        BB        FB        HB        SC Undefined 
+##     92310       798     14463     10650      1169
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{categorical\_summary2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##      Aviation Complementary     Corporate        Direct        Groups 
+##           237           743          5295         12606         19811 
+## Offline TA/TO     Online TA     Undefined 
+##         24219         56477             2
+\end{verbatim}
+
+This section is about to calculate and display the aggregating lead time
+impact on cancellations
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lead\_time\_cancellation\_aggregate }\OtherTok{\textless{}{-}} \FunctionTok{aggregate}\NormalTok{(is\_canceled }\SpecialCharTok{\textasciitilde{}}\NormalTok{ lead\_time, }\AttributeTok{data =}\NormalTok{ hotel\_data, }\AttributeTok{FUN =} \ControlFlowTok{function}\NormalTok{(x) }\FunctionTok{mean}\NormalTok{(x }\SpecialCharTok{==} \DecValTok{1}\NormalTok{))}
+\NormalTok{lead\_time\_cancellation\_aggregate}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     lead_time is_canceled
+## 1           0  0.06776990
+## 2           1  0.09277457
+## 3           2  0.10294828
+## 4           3  0.10022026
+## 5           4  0.10262391
+## 6           5  0.13162939
+## 7           6  0.13979239
+## 8           7  0.12922615
+## 9           8  0.19595782
+## 10          9  0.22076613
+## 11         10  0.22745902
+## 12         11  0.20947867
+## 13         12  0.25764597
+## 14         13  0.20462850
+## 15         14  0.22279793
+## 16         15  0.30035757
+## 17         16  0.24840764
+## 18         17  0.26560726
+## 19         18  0.31598063
+## 20         19  0.31108462
+## 21         20  0.29066667
+## 22         21  0.28171091
+## 23         22  0.30410184
+## 24         23  0.32970451
+## 25         24  0.26766917
+## 26         25  0.32006126
+## 27         26  0.35022355
+## 28         27  0.37750385
+## 29         28  0.41341463
+## 30         29  0.29494382
+## 31         30  0.36874052
+## 32         31  0.27591241
+## 33         32  0.33043478
+## 34         33  0.36391913
+## 35         34  0.39855072
+## 36         35  0.32366412
+## 37         36  0.29713424
+## 38         37  0.47399703
+## 39         38  0.48521739
+## 40         39  0.33878158
+## 41         40  0.31994460
+## 42         41  0.32125206
+## 43         42  0.34267241
+## 44         43  0.32567850
+## 45         44  0.39968404
+## 46         45  0.37430168
+## 47         46  0.36363636
+## 48         47  0.27288732
+## 49         48  0.26482213
+## 50         49  0.39039666
+## 51         50  0.40037951
+## 52         51  0.33879781
+## 53         52  0.43908046
+## 54         53  0.29433962
+## 55         54  0.45338983
+## 56         55  0.31304348
+## 57         56  0.52366864
+## 58         57  0.30853392
+## 59         58  0.37905237
+## 60         59  0.41346154
+## 61         60  0.38761468
+## 62         61  0.43469786
+## 63         62  0.38888889
+## 64         63  0.31909548
+## 65         64  0.32624113
+## 66         65  0.43526786
+## 67         66  0.40128755
+## 68         67  0.41002278
+## 69         68  0.46631206
+## 70         69  0.40501792
+## 71         70  0.32031250
+## 72         71  0.47281324
+## 73         72  0.35781544
+## 74         73  0.37562189
+## 75         74  0.45472062
+## 76         75  0.41647059
+## 77         76  0.35327635
+## 78         77  0.38095238
+## 79         78  0.44270833
+## 80         79  0.38375350
+## 81         80  0.35227273
+## 82         81  0.37500000
+## 83         82  0.40966921
+## 84         83  0.27777778
+## 85         84  0.24347826
+## 86         85  0.40988372
+## 87         86  0.41431670
+## 88         87  0.56444444
+## 89         88  0.43526786
+## 90         89  0.39047619
+## 91         90  0.26962457
+## 92         91  0.40718563
+## 93         92  0.56235828
+## 94         93  0.46857143
+## 95         94  0.38438438
+## 96         95  0.45408163
+## 97         96  0.37228261
+## 98         97  0.44101124
+## 99         98  0.37380952
+## 100        99  0.50465116
+## 101       100  0.45244957
+## 102       101  0.45142857
+## 103       102  0.44104803
+## 104       103  0.52519894
+## 105       104  0.57142857
+## 106       105  0.57524272
+## 107       106  0.58823529
+## 108       107  0.30566038
+## 109       108  0.40449438
+## 110       109  0.44444444
+## 111       110  0.38720539
+## 112       111  0.46246246
+## 113       112  0.38770686
+## 114       113  0.62198391
+## 115       114  0.40000000
+## 116       115  0.40000000
+## 117       116  0.36962025
+## 118       117  0.40067340
+## 119       118  0.28424658
+## 120       119  0.30578512
+## 121       120  0.44047619
+## 122       121  0.42424242
+## 123       122  0.29513889
+## 124       123  0.40579710
+## 125       124  0.41233766
+## 126       125  0.43319838
+## 127       126  0.42400000
+## 128       127  0.40692641
+## 129       128  0.40460526
+## 130       129  0.50841751
+## 131       130  0.49158249
+## 132       131  0.44666667
+## 133       132  0.30115830
+## 134       133  0.29433962
+## 135       134  0.48697917
+## 136       135  0.51398601
+## 137       136  0.35714286
+## 138       137  0.44755245
+## 139       138  0.35797665
+## 140       139  0.50226244
+## 141       140  0.39880952
+## 142       141  0.39781022
+## 143       142  0.47876448
+## 144       143  0.51827243
+## 145       144  0.47031963
+## 146       145  0.38429752
+## 147       146  0.43388430
+## 148       147  0.48165138
+## 149       148  0.61151079
+## 150       149  0.54871795
+## 151       150  0.51552795
+## 152       151  0.41643836
+## 153       152  0.32051282
+## 154       153  0.43801653
+## 155       154  0.27374302
+## 156       155  0.51562500
+## 157       156  0.52614379
+## 158       157  0.46122449
+## 159       158  0.52160494
+## 160       159  0.28474576
+## 161       160  0.38164251
+## 162       161  0.60434783
+## 163       162  0.50825083
+## 164       163  0.47465438
+## 165       164  0.46089385
+## 166       165  0.40082645
+## 167       166  0.58585859
+## 168       167  0.39267016
+## 169       168  0.51552795
+## 170       169  0.44213650
+## 171       170  0.37142857
+## 172       171  0.29047619
+## 173       172  0.43027888
+## 174       173  0.46046512
+## 175       174  0.47908745
+## 176       175  0.54642857
+## 177       176  0.38750000
+## 178       177  0.46825397
+## 179       178  0.65846154
+## 180       179  0.50431034
+## 181       180  0.41111111
+## 182       181  0.52203390
+## 183       182  0.48387097
+## 184       183  0.50511945
+## 185       184  0.50495050
+## 186       185  0.36190476
+## 187       186  0.55870445
+## 188       187  0.47328244
+## 189       188  0.64143426
+## 190       189  0.41095890
+## 191       190  0.39375000
+## 192       191  0.27011494
+## 193       192  0.25938567
+## 194       193  0.47089947
+## 195       194  0.31666667
+## 196       195  0.50267380
+## 197       196  0.39285714
+## 198       197  0.40229885
+## 199       198  0.56000000
+## 200       199  0.53301887
+## 201       200  0.50349650
+## 202       201  0.47586207
+## 203       202  0.37272727
+## 204       203  0.34358974
+## 205       204  0.40251572
+## 206       205  0.57792208
+## 207       206  0.43150685
+## 208       207  0.40094340
+## 209       208  0.35078534
+## 210       209  0.42424242
+## 211       210  0.55392157
+## 212       211  0.60975610
+## 213       212  0.52525253
+## 214       213  0.47194719
+## 215       214  0.40506329
+## 216       215  0.32535885
+## 217       216  0.50574713
+## 218       217  0.37623762
+## 219       218  0.52380952
+## 220       219  0.52800000
+## 221       220  0.27516779
+## 222       221  0.41704036
+## 223       222  0.45695364
+## 224       223  0.43884892
+## 225       224  0.41406250
+## 226       225  0.26206897
+## 227       226  0.53684211
+## 228       227  0.43956044
+## 229       228  0.42105263
+## 230       229  0.63541667
+## 231       230  0.44444444
+## 232       231  0.43478261
+## 233       232  0.42168675
+## 234       233  0.62416107
+## 235       234  0.40579710
+## 236       235  0.50649351
+## 237       236  0.31333333
+## 238       237  0.43750000
+## 239       238  0.69841270
+## 240       239  0.53246753
+## 241       240  0.66896552
+## 242       241  0.38461538
+## 243       242  0.50943396
+## 244       243  0.55769231
+## 245       244  0.71140940
+## 246       245  0.79000000
+## 247       246  0.47674419
+## 248       247  0.54854369
+## 249       248  0.35365854
+## 250       249  0.47169811
+## 251       250  0.59340659
+## 252       251  0.50000000
+## 253       252  0.32432432
+## 254       253  0.46666667
+## 255       254  0.39560440
+## 256       255  0.42372881
+## 257       256  0.15853659
+## 258       257  0.23484848
+## 259       258  0.71034483
+## 260       259  0.77058824
+## 261       260  0.71428571
+## 262       261  0.53333333
+## 263       262  0.69047619
+## 264       263  0.50000000
+## 265       264  0.46969697
+## 266       265  0.51304348
+## 267       266  0.59210526
+## 268       267  0.86290323
+## 269       268  0.58974359
+## 270       269  0.54216867
+## 271       270  0.53043478
+## 272       271  0.27472527
+## 273       272  0.60839161
+## 274       273  0.54375000
+## 275       274  0.73600000
+## 276       275  0.81707317
+## 277       276  0.63758389
+## 278       277  0.79559748
+## 279       278  0.80434783
+## 280       279  0.90909091
+## 281       280  0.70886076
+## 282       281  0.84426230
+## 283       282  0.44303797
+## 284       283  0.69105691
+## 285       284  0.68750000
+## 286       285  0.51470588
+## 287       286  0.64021164
+## 288       287  0.22058824
+## 289       288  0.64545455
+## 290       289  0.54347826
+## 291       290  0.75229358
+## 292       291  0.43333333
+## 293       292  0.39285714
+## 294       293  0.72727273
+## 295       294  0.66666667
+## 296       295  0.82407407
+## 297       296  0.31666667
+## 298       297  0.57692308
+## 299       298  0.51020408
+## 300       299  0.84090909
+## 301       300  0.75268817
+## 302       301  0.55789474
+## 303       302  0.89115646
+## 304       303  0.68888889
+## 305       304  0.90055249
+## 306       305  0.85714286
+## 307       306  0.55882353
+## 308       307  0.70370370
+## 309       308  0.56896552
+## 310       309  0.75961538
+## 311       310  0.51111111
+## 312       311  0.83950617
+## 313       312  0.75581395
+## 314       313  0.87654321
+## 315       314  0.86363636
+## 316       315  0.75000000
+## 317       316  0.35500000
+## 318       317  0.80412371
+## 319       318  0.67346939
+## 320       319  0.65714286
+## 321       320  0.31746032
+## 322       321  0.82812500
+## 323       322  0.57000000
+## 324       323  0.85810811
+## 325       324  0.50000000
+## 326       325  0.82352941
+## 327       326  0.63829787
+## 328       327  0.52272727
+## 329       328  0.46575342
+## 330       329  0.74285714
+## 331       330  0.83168317
+## 332       331  0.68750000
+## 333       332  0.82000000
+## 334       333  0.86440678
+## 335       334  0.85185185
+## 336       335  0.62608696
+## 337       336  0.49700599
+## 338       337  0.73913043
+## 339       338  0.47727273
+## 340       339  0.62500000
+## 341       340  0.80000000
+## 342       341  0.88095238
+## 343       342  0.71724138
+## 344       343  0.33333333
+## 345       344  0.92537313
+## 346       345  0.35714286
+## 347       346  0.30188679
+## 348       347  0.75000000
+## 349       348  0.62857143
+## 350       349  0.74193548
+## 351       350  0.92857143
+## 352       351  0.81372549
+## 353       352  0.45161290
+## 354       353  0.80000000
+## 355       354  0.44444444
+## 356       355  0.87500000
+## 357       356  0.87096774
+## 358       357  1.00000000
+## 359       358  0.97260274
+## 360       359  0.56818182
+## 361       360  0.85185185
+## 362       361  0.70000000
+## 363       362  0.00000000
+## 364       363  0.71428571
+## 365       364  0.47852761
+## 366       365  0.83076923
+## 367       366  0.33333333
+## 368       367  0.80000000
+## 369       368  0.82500000
+## 370       370  0.00000000
+## 371       371  1.00000000
+## 372       372  1.00000000
+## 373       373  0.93103448
+## 374       374  0.95238095
+## 375       375  0.50000000
+## 376       376  0.00000000
+## 377       377  0.22471910
+## 378       378  1.00000000
+## 379       379  0.92647059
+## 380       380  1.00000000
+## 381       381  0.60000000
+## 382       382  0.00000000
+## 383       383  0.34722222
+## 384       384  0.92000000
+## 385       385  0.72413793
+## 386       386  0.33333333
+## 387       387  1.00000000
+## 388       388  0.00000000
+## 389       389  0.33333333
+## 390       390  0.25000000
+## 391       391  1.00000000
+## 392       393  1.00000000
+## 393       394  0.66666667
+## 394       395  0.62962963
+## 395       396  0.21176471
+## 396       397  0.05882353
+## 397       398  1.00000000
+## 398       399  0.50000000
+## 399       400  0.00000000
+## 400       403  1.00000000
+## 401       405  0.48837209
+## 402       406  0.33333333
+## 403       407  0.93103448
+## 404       408  0.90909091
+## 405       409  0.16000000
+## 406       410  1.00000000
+## 407       411  1.00000000
+## 408       412  1.00000000
+## 409       414  0.39047619
+## 410       418  0.41666667
+## 411       419  1.00000000
+## 412       420  1.00000000
+## 413       422  0.65517241
+## 414       423  0.31481481
+## 415       424  0.00000000
+## 416       426  1.00000000
+## 417       429  0.06666667
+## 418       433  1.00000000
+## 419       434  0.18518519
+## 420       435  1.00000000
+## 421       437  1.00000000
+## 422       440  1.00000000
+## 423       443  1.00000000
+## 424       444  1.00000000
+## 425       445  0.00000000
+## 426       447  1.00000000
+## 427       448  0.19230769
+## 428       450  1.00000000
+## 429       451  0.69696970
+## 430       454  0.96969697
+## 431       457  0.25000000
+## 432       458  1.00000000
+## 433       460  0.00000000
+## 434       461  1.00000000
+## 435       462  0.54347826
+## 436       463  0.00000000
+## 437       464  0.86206897
+## 438       465  0.48387097
+## 439       467  1.00000000
+## 440       468  0.71428571
+## 441       471  1.00000000
+## 442       475  1.00000000
+## 443       476  0.42307692
+## 444       478  0.84615385
+## 445       479  0.39393939
+## 446       482  1.00000000
+## 447       489  1.00000000
+## 448       490  1.00000000
+## 449       493  1.00000000
+## 450       496  1.00000000
+## 451       503  1.00000000
+## 452       504  0.19230769
+## 453       507  1.00000000
+## 454       510  1.00000000
+## 455       517  1.00000000
+## 456       518  0.15384615
+## 457       521  1.00000000
+## 458       524  1.00000000
+## 459       531  1.00000000
+## 460       532  0.00000000
+## 461       538  1.00000000
+## 462       542  0.00000000
+## 463       545  1.00000000
+## 464       552  1.00000000
+## 465       559  1.00000000
+## 466       566  1.00000000
+## 467       573  1.00000000
+## 468       580  1.00000000
+## 469       587  1.00000000
+## 470       594  1.00000000
+## 471       601  1.00000000
+## 472       605  1.00000000
+## 473       608  1.00000000
+## 474       615  1.00000000
+## 475       622  1.00000000
+## 476       626  1.00000000
+## 477       629  1.00000000
+## 478       709  0.00000000
+## 479       737  0.00000000
+\end{verbatim}
+
+This section is about to calculate and display the aggregating effect of
+meal type on customer satisfaction.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{meal\_satisfaction\_aggregate }\OtherTok{\textless{}{-}} \FunctionTok{aggregate}\NormalTok{(adr }\SpecialCharTok{\textasciitilde{}}\NormalTok{ meal, }\AttributeTok{data =}\NormalTok{ hotel\_data, }\AttributeTok{FUN =}\NormalTok{ mean)}
+\NormalTok{meal\_satisfaction\_aggregate}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        meal       adr
+## 1        BB  99.40704
+## 2        FB 109.04048
+## 3        HB 120.30704
+## 4        SC  98.29587
+## 5 Undefined  91.94831
+\end{verbatim}
+
+\hypertarget{including-plot-1}{%
+\subsection{Including Plot \#1}\label{including-plot-1}}
+
+This section is about the graph for the `Lead Time Distribution'
+
+\includegraphics{Week2DataDiveAssigment_files/figure-latex/lead_time_plot-1.pdf}
+
+\#\# Including Plot \#2
+
+This section is about the graph for the `Correlation between Lead Time
+and Cancellations'
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lead\_time\_cancellation\_plot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(hotel\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ lead\_time, }\AttributeTok{fill =} \FunctionTok{factor}\NormalTok{(is\_canceled))) }\SpecialCharTok{+}
+  \FunctionTok{geom\_density}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.7}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Correlation between Lead Time and Cancellations"}\NormalTok{,}
+       \AttributeTok{x =} \StringTok{"Lead Time (days)"}\NormalTok{,}
+       \AttributeTok{y =} \StringTok{"Density"}\NormalTok{,}
+       \AttributeTok{fill =} \StringTok{"Cancellation"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+
+\CommentTok{\# Display the lead\_time\_cancellation\_plot plot}
+\NormalTok{lead\_time\_cancellation\_plot}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Week2DataDiveAssigment_files/figure-latex/unnamed-chunk-1-1.pdf}
+
+\#\#Booking Pattern and Lead Time \# Question : How does the lead time
+booking and arrival vary across diff type of meal (meal column) and
+market segments ( market\_segment column) \# Reasoning: By having the
+lead time pattern, Meal and market segments can be associated and
+marketting and operational planning can be strategiyes accordingly.
+\#\#Lead Time Impact on cancellation \# How does the lead time - number
+of days and arrival , correlate with the likehood of cancellation \#
+Reasoning: By understanding the relationship between lead time and
+cancellation , you can gain insights into whether customer are more
+likehood to cencel reservation made well in advance or closure to the
+avival date so that marketting and operational planning can be
+strategiyes accordingly. \#\# Customer preference across market segment
+\# How do cusomer prefernce like booking changes, special request etc.
+vary across different market segment like online travel agency and
+corporate. \# Reasoning:Exploring how customer behaviour differs among
+market segment can guide targets market segment and improves Services
+based on unique needs and preference of each segment.
+
+Thank You!!!
+
+\end{document}
