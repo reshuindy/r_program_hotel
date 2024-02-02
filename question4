@@ -1,0 +1,16 @@
+The purpose of this week's data dive is for you to think critically about what might go wrong when it comes time to make conclusions about your data.
+
+Your RMarkdown notebook for this data dive should contain the following:
+
+A collection of 5 random samples of your data (with replacement).
+Each subsample should be as long as roughly 50% percent of your data. We are simulating the act of collecting data from a population where the "population" is represented by the data set you already have.
+Store each sample set in a separate data frame (e.g., df_2 might be the second of these samples).
+Of course, these subsamples should each include both categorical and continuous (numeric) data.
+Scrutinize these subsamples. Note: you might find group_by quite helpful here!
+How different are they?
+What would you have called an anomaly in one sub-sample that you wouldn't in another?
+Are there aspects of the data that are consistent among all sub-samples?
+Try to incorporate Monte Carlo simulations here (see Lab 3) if you can ...
+Consider how this investigation affects how you might draw conclusions about the data in the future.
+For each of the above tasks, you must explain to the reader what insight was gathered, its significance, and any further questions you have which might need to be further investigated.
+
