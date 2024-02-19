@@ -1,0 +1,263 @@
+---
+title: "Hotels Week 6 Data Dive"
+author: "Reshu Gupta"
+date: "`r Sys.Date()`"
+output: html_document
+---
+Initial setup and Configure the data set.</br>
+Load the data set file in variable hotel_data files. <br>
+Data set - Hotels : This data comes from an open hotel booking demand dataset from Antonio, Almeida and Nunes.<br>
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Load the 'dplyr' library
+library(dplyr)
+library(ggplot2)
+# Load the data into hotel_data for further use
+#hotel_data <- read.csv(file.choose())
+
+hotel_data <- read.csv('C:/Users/amitg/Documents/workspaceR/data/hotels.csv')
+
+```
+
+
+## Data Dive — Confidence Intervals
+<b> Ask: Build at least three pairs of variables</b>
+<ul><li>For each pair of variables, include at least one column that you created (i.e., calculated based on others)</li>
+<li>All variables for this data dive should be either continuous (i.e., numeric) or ordered (e.g., ['small', 'medium', 'large'] is okay, but ["apples", "oranges", "bananas"] is not)</li>
+<li>At least one pair should be a response variable and an explanatory variable</li>
+</ul>
+
+In Below section, There are three pairs : <br>
+
+<b>1.Pair 1 : Response and Explanatory Variables</b>
+<ul>
+  <li>Response Variable: is_canceled (binary: 0 for not canceled, 1 for canceled)</li>
+  <li>Explanatory Variable: lead_time (continuous variable representing the number of days that elapsed between the entering date of the booking and the arrival date)</li>
+</ul>
+<br>
+
+```{r pair_1_and_2}
+pair_1 <- hotel_data[, c("is_canceled", "lead_time")]
+
+# Display the first few rows of pair 1
+head(pair_1)
+
+
+```
+
+
+<b>2.Pair 2 : Continuous Variables</b>
+<ul>
+  <li>Variable 1: stays_in_weekend_nights (continuous variable representing the number of weekend nights the guest stayed)</li>
+  <li>Variable 2: stays_in_week_nights (continuous variable representing the number of weekday nights the guest stayed)</li>
+</ul>
+
+
+```{r pair_2}
+# Display the first few rows of pair 2
+pair_2 <- hotel_data[, c("stays_in_weekend_nights", "stays_in_week_nights")]
+
+```
+
+
+
+<b>3. Pair 3 : Ordered Categorical Variables</b>
+<ul>
+  <li>Variable 1: reserved_room_type (ordered categorical variable representing the type of room reserved).</li>
+  <li>Variable 2: assigned_room_type (ordered categorical variable representing the type of room assigned to the guest upon arrival).</li>
+</ul>
+
+The room_type_difference column (in this section) is calculated based on the difference between the assigned and reserved room types. This column serves as an additional variable that is created based on others like - 'reserved_room_type','assigned_room_type' , 'room_type_difference'.' <br>
+
+
+```{r pair_3, message=TRUE, warning=TRUE, paged.print=TRUE}
+
+# Convert room types to numeric values
+room_type_numeric <- function(room_type) {
+  if (room_type == 'A') {
+    return(1)
+  } else if (room_type == 'B') {
+    return(2)
+  } else if (room_type == 'C') {
+    return(3)
+  } else if (room_type == 'D') {
+    return(4)
+  } else if (room_type == 'E') {
+    return(5)
+  } else if (room_type == 'F') {
+    return(6)
+  } else if (room_type == 'G') {
+    return(7)
+  } else if (room_type == 'H') {
+    return(8)
+  } else {
+    return(NA)  # If room type is not recognized
+  }
+}
+
+# Apply the function to the reserved and assigned room type columns
+hotel_data$reserved_room_numeric <- sapply(hotel_data$reserved_room_type, room_type_numeric)
+hotel_data$assigned_room_numeric <- sapply(hotel_data$assigned_room_type, room_type_numeric)
+
+
+# Calculate room type difference
+hotel_data$room_type_difference <- hotel_data$assigned_room_numeric - hotel_data$reserved_room_numeric
+
+# Pair 3: Ordered Categorical Variables with Room Type Difference
+pair_3 <- hotel_data[, c("reserved_room_type", "assigned_room_type", "room_type_difference")]
+
+
+# Display the first few rows of pair 3
+head(pair_3)
+tail(pair_3)
+
+```
+
+<b>Ask:
+<ul>
+  <li>Plot a visualization for each relationship, and draw some conclusions based on the plot.</li>
+  <li>Use what we've covered so far in class to scrutinize the plot (e.g., are there any outlines?)</li>
+</ul>
+</b>
+
+
+<h1> Plots </h1>
+
+
+<b>1. Cancellation vs. Lead Time:</b>
+<ul>
+  <li>Look for any patterns or trends in cancellations as lead time increases. Are there any outliers in lead time?</li>
+  <li>Conclusion: It seems like there might be a higher tendency for cancellations when lead time is longer, but further analysis is needed to confirm.</li>
+</ul>
+
+
+```{r pair_1_ploat, echo=FALSE}
+# Pair 1: is_canceled vs. lead_time
+ggplot(hotel_data, aes(x = lead_time, y = is_canceled)) +
+  geom_point() +
+  labs(x = "Lead Time", y = "Canceled (1) or Not (0)") +
+  ggtitle("Cancellation vs. Lead Time")
+
+
+```
+
+
+
+
+<b>2. Weekend Nights vs. Week Nights:</b>
+<ul>
+  <li>Are there any extreme values or outliers in the number of weekend or week nights stayed?</li>
+  <li>Conclusion: Check for any guests staying exceptionally long periods during weekends or weekdays, as these could be potential outliers.</li>
+</ul>
+
+
+```{r pair_2_plat, echo=FALSE}
+# Pair 2: stays_in_weekend_nights vs. stays_in_week_nights
+ggplot(hotel_data, aes(x = stays_in_weekend_nights, y = stays_in_week_nights)) +
+  geom_point() +
+  labs(x = "Weekend Nights", y = "Week Nights") +
+  ggtitle("Weekend Nights vs. Week Nights")
+
+```
+
+
+<b>3. Reserved Room Type vs. Assigned Room Type:</b>
+<ul>
+  <li>Are there any extreme values or outliers in the number of weekend or week nights stayed?</li>
+  <li>Conclusion: Check for any guests staying exceptionally long periods during weekends or weekdays, as these could be potential outliers.</li>
+</ul>
+
+```{r pair_3_plat, echo=FALSE}
+
+# Pair 3: reserved_room_type vs. assigned_room_type
+ggplot(hotel_data, aes(x = reserved_room_type, y = assigned_room_type)) +
+  geom_point() +
+  labs(x = "Reserved Room Type", y = "Assigned Room Type") +
+  ggtitle("Reserved Room Type vs. Assigned Room Type")
+
+```
+
+<b>Ask
+<ul>
+  <li>Calculate the appropriate correlation coefficient for each of these combinations
+  <ul><li>Explain why the value makes sense (or doesn't) based on the visualization(s)</li></ul>
+  </li>
+</ul></b>
+
+To calculate correlation coefficient for each combination and build confidence intervals for the response variable.<br>
+1. Calculate the correlation coefficient for each pair of variables.<br>
+2. Construct confidence intervals for the response variable (is_canceled).<br>
+
+
+```{r coefficients }
+
+# Calculate correlation coefficients
+cor_pair1 <- cor(hotel_data$is_canceled, hotel_data$lead_time)
+cor_pair2 <- cor(hotel_data$stays_in_weekend_nights, hotel_data$stays_in_week_nights)
+
+
+
+# Define function to calculate Cramer's V
+cramers_v <- function(x, y) {
+  confusion_matrix <- table(x, y)
+  n <- sum(confusion_matrix)
+  chi_sq <- chisq.test(confusion_matrix)$statistic
+  v <- sqrt(chi_sq / (n * (min(nrow(confusion_matrix), ncol(confusion_matrix)) - 1)))
+  return(v)
+}
+
+
+# Calculate Cramer's V for reserved_room_type and assigned_room_type
+cramer_v_pair3 <- cramers_v(hotel_data$reserved_room_type, hotel_data$assigned_room_type)
+
+# Print correlation coefficients and Cramer's V
+print(paste("Correlation coefficient for Pair 1:", cor_pair1))
+print(paste("Correlation coefficient for Pair 2:", cor_pair2))
+print(paste("Cramer's V for Pair 3:", cramer_v_pair3))
+
+# Confidence interval for response variable is_canceled
+is_canceled_mean <- mean(hotel_data$is_canceled)
+is_canceled_sd <- sd(hotel_data$is_canceled)
+n <- length(hotel_data$is_canceled)
+standard_error <- is_canceled_sd / sqrt(n)
+
+# Assuming a normal distribution, construct a 95% confidence interval
+lower_bound <- is_canceled_mean - qnorm(0.975) * standard_error
+upper_bound <- is_canceled_mean + qnorm(0.975) * standard_error
+
+# Print confidence interval
+print(paste("95% Confidence Interval for is_canceled:", lower_bound, "-", upper_bound))
+
+
+```
+
+<b>1. Correlation Coefficients:</b><br>
+<ul>
+  <li>Pair 1 (is_canceled vs. lead_time): The correlation coefficient indicates the strength and direction of the linear relationship between the variables. A positive correlation would suggest that as lead time increases, the likelihood of cancellation increases, and vice versa. A negative correlation would suggest the opposite.</li>
+  <li>Pair 2 (stays_in_weekend_nights vs. stays_in_week_nights): The correlation coefficient measures the linear relationship between the number of weekend nights stayed and the number of weekday nights stayed. A positive correlation would suggest that guests who stay more weekend nights also tend to stay more weekday nights, and vice versa.</li>
+  <li>Pair 3 (reserved_room_type vs. assigned_room_type): Since these are categorical variables, we used Cramer's V as a measure of association. Cramer's V ranges from 0 to 1, where 0 indicates no association and 1 indicates a perfect association. The closer the value is to 1, the stronger the association between the two variables.</li>
+</ul>
+
+<b>2. Confidence Interval for is_canceled:</b>
+<ul><li>The confidence interval provides a range of plausible values for the population mean of cancellations (is_canceled). With a 95% confidence level, we are 95% confident that the true population mean of cancellations falls within the calculated interval.</li></ul>
+
+
+<b>Conclusion:</b> Based on the correlation coefficients and confidence interval, we can draw conclusions about the relationships between variables and the population mean of cancellations which can be used to figure out the decision-making like <br>
+<b>1. Correlation Coefficients:</b>
+<ul>
+  <li>For Pair 1 (is_canceled vs. lead_time), if the correlation coefficient is positive, it suggests that as lead time increases, the likelihood of cancellation also increases, and vice versa. A negative correlation would imply the opposite relationship.
+  </li>
+<li>For Pair 2 (stays_in_weekend_nights vs. stays_in_week_nights), the correlation coefficient measures how the number of weekend nights stayed relates to the number of weekday nights stayed. A positive correlation would mean that guests who stay more weekend nights tend to stay more weekday nights, and vice versa.</li>
+</ul>
+
+<b>2. Confidence Interval for is_canceled:</b>
+<ul><li>The 95% confidence interval for the population mean of cancellations (is_canceled) provides a range of plausible values. With a 95% confidence level, we are confident that the true population mean of cancellations falls within the calculated interval. This information is valuable for understanding the variability and uncertainty around the average cancellation rate in the dataset.</li></ul>
+
+Overall, these analyses allow us to better understand the relationships between variables and draw conclusions about cancellations and other relevant factors in the dataset. Further analysis and interpretation may be necessary based on the specific context and goals of the analysis.
+
+
+<p>Thank You.!!!</P>
+
+
