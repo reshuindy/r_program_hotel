@@ -1,0 +1,1010 @@
+---
+title: "Hotel Booking Stat Analysis"
+author: "Reshu Gupta"
+date: "`r Sys.Date()`"
+output: html_document
+#css: "style.css"
+
+---
+
+First, initial setup, Configure the library and Load the data file</br> 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE)
+
+```
+
+```{r  echo=FALSE}
+#knitr::opts_chunk$set(warning = FALSE)
+library(tidyverse)
+library(ggplot2)
+library(GGally)
+library(car)
+library(feasts)
+library(skimr)
+library(maps)
+library(mapdata)
+library(gridExtra)
+library("modelsummary")
+```
+
+```{r echo=FALSE}
+#hotel_data <- read.csv('C:/Users/amitg/Documents/workspaceR/data/hotels.csv')
+#Hotel 1 - resort hotel 
+hotel1 <- read_csv(here::here("C:/Users/amitg/Documents/workspaceR/data/H1.csv")) %>% 
+  janitor::clean_names() %>% 
+  mutate(hotel = "Resort Hotel") %>% 
+  select(hotel, everything())
+
+# city hotel
+hotel2 <- read_csv(here::here("C:/Users/amitg/Documents/workspaceR/data/H2.csv")) %>% 
+  janitor::clean_names() %>% 
+  mutate(hotel = "City Hotel") %>% 
+  select(hotel, everything())
+
+hotel_row <- bind_rows(hotel1, hotel2)
+
+```
+<h4>Explore the structure of the data set</h4>
+```{r  echo=FALSE}
+
+#Explore the structure of the data set
+str(hotel_row)
+```
+
+
+```{r  echo= FALSE}
+summary(hotel_row)
+```
+
+<H3><b>About Dataset</b></h3>
+
+<div style="text-color: black" >This dataset contains information about hotel bookings with a total of 119390 records for two hotel groups - “City Hotel” and “Resort Hotel”  with various attributes of guests and their stays (Abstract is given above). It encompasses diverse variables such as Average daily rate, cancellation, Arrival date, Length of stay, Guest demographics, Booking channels, and Special requests. The data spans multiple years and months.It is providing a comprehensive overview of booking patterns over time. 
+The dataset variables like lead time, cancellation, meal, length of stay, etc. can be used in detailed analysis to find the pattern or message in the dataset which can help formulate the business strategy.
+</div>
+<div><h5><b>Acknowledgement and Dataset source</b></h5>This Dataset has been taken from Kaggle, known as TidyTuesday. This has been written by Antonio, Almeida and Nunes.</a><div>
+<br>
+<div><h5><b>Data Dictionary (written by tidytuesday in Datasource)</b></h5></div>
+<div>
+  <table>
+   <tr>
+      <th>variable</th>
+      <th>description</th> 
+   </tr>   
+  <tr>
+    <td>hotel</td>
+    <td>Hotel</td>
+  </tr>
+  <tr>
+  <td>is_canceled</td>
+  <td>Value indicating if the booking was canceled (1) or not (0)</td>
+  </tr>
+  <tr>
+  <td>lead_time</td>
+  <td>Number of days that elapsed between the entering date of the booking into the PMS and the arrival date</td>
+  </tr>
+  <tr>
+  <tr>
+  <td>arrival_date_year</td>
+  <td>Year of arrival date</td>
+  </tr>
+  <tr>
+  <tr>
+  <td>arrival_date_month</td>
+  <td>Month of arrival date</td>
+  </tr>
+  <tr>
+  <td>arrival_date_week_number</td>
+  <td>Week number of year for arrival date</td>
+  </tr>
+  <tr>
+  <td>arrival_date_day_of_month</td>
+  <td>Day of arrival date</td>
+  </tr>
+  <tr>
+  <td>stays_in_weekend_nights</td>
+  <td>Number of weekend nights (Saturday or Sunday) the guest stayed or booked to stay at the hotel</td>
+  </tr>
+  <tr>
+  <td>stays_in_week_nights</td>
+  <td>Number of week nights (Monday to Friday) the guest stayed or booked to stay at the hotel</td>
+  </tr>
+  <tr>
+  <td>adults</td>
+  <td>Number of adults</td>
+  </tr>
+  <tr>
+  <td>children</td>
+  <td>Number of children</td>
+  </tr>
+  <tr>
+  <td>babies</td>
+  <td>Number of babies</td>
+  </tr>
+  <tr>
+  <td>meal</td>
+  <td>Type of meal booked. Categories are presented in standard hospitality meal packages:
+  Undefined/SC – no meal package;
+  BB – Bed & Breakfast;
+  HB – Half board (breakfast and one other meal – usually dinner);
+  FB – Full board (breakfast, lunch and dinner)</td>
+  </tr>
+  <tr>
+  <td>country</td>
+  <td>Country of origin. Categories are represented in the ISO 3155–3:2013 format</td>
+  </tr>
+  <tr>
+  <td>market_segment</td>
+  <td>Market segment designation. In categories, the term "TA" means "Travel Agents" and "TO" means "Tour Operators"</td>
+  </tr>
+  <tr>
+  <td>distribution_channel</td>
+  <td>Booking distribution channel. The term "TA" means "Travel Agents" and "TO" means "Tour Operators"</td>
+  </tr>
+  <tr>
+  <td>is_repeated_guest</td>
+  <td>Value indicating if the booking name was from a repeated guest (1) or not (0)</td>
+  </tr>
+  <tr>
+  <td>previous_cancellations</td>
+  <td>Number of previous bookings that were cancelled by the customer prior to the current booking</td>
+  </tr>
+  <tr>
+  <td>previous_bookings_not_canceled</td>
+  <td>Number of previous bookings not cancelled by the customer prior to the current booking</td>
+  </tr>
+  <tr>
+  <td>reserved_room_type</td>
+  <td>Code of room type reserved. Code is presented instead of designation for anonymity reasons</td>
+  </tr>
+  <tr>
+  <td>assigned_room_type</td>
+  <td>Code for the type of room assigned to the booking. Sometimes the assigned room type differs from the reserved room type due to hotel operation reasons (e.g. overbooking) or by customer request. Code is presented instead of designation for anonymity reasons</td>
+  </tr>
+  <tr>
+  <td>booking_changes</td>
+  <td>Number of changes/amendments made to the booking from the moment the booking was entered on the PMS until the moment of check-in or cancellation</td>
+  </tr>
+  <tr>
+  <td>deposit_type</td>
+  <td>Indication on if the customer made a deposit to guarantee the booking. This variable can assume three categories:
+  No Deposit – no deposit was made;
+  Non Refund – a deposit was made in the value of the total stay cost;
+  Refundable – a deposit was made with a value under the total cost of stay.</td>
+  </tr>
+  <tr>
+  <td>agent</td>
+  <td>ID of the travel agency that made the booking</td>
+  </tr>
+  <tr>
+  <td>company</td>
+  <td>ID of the company/entity that made the booking or responsible for paying the booking. ID is presented instead of designation for anonymity reasons</td>
+  </tr>
+  <tr>
+  <td>customer_type</td>
+  <td>Type of booking, assuming one of four categories:
+  Contract - when the booking has an allotment or other type of contract associated to it;
+  Group – when the booking is associated to a group;
+  Transient – when the booking is not part of a group or contract, and is not associated to other transient booking;
+  Transient-party – when the booking is transient, but is associated to at least other transient booking</td>
+  </tr>
+  
+  <tr>
+  <td>adr</td>
+  <td>Average Daily Rate as defined by dividing the sum of all lodging transactions by the total number of staying nights</td>
+  </tr>
+  
+  <tr>
+  <td>required_car_parking_spaces</td>
+  <td>Number of car parking spaces required by the customer</td>
+  </tr>
+  
+  <tr>
+  <td>total_of_special_requests</td>
+  <td>Number of special requests made by the customer (e.g. twin bed or high floor)</td>
+  </tr>
+  
+  <tr>
+  <td>reservation_status</td>
+  <td>Reservation last status, assuming one of three categories:
+  Canceled – booking was canceled by the customer;
+  Check-Out – customer has checked in but already departed;
+  No-Show – customer did not check-in and did inform the hotel of the reason why</td>
+  </tr>
+  
+  <tr>
+  <td>reservation_status_date</td>
+  <td>Date at which the last status was set. This variable can be used in conjunction with the ReservationStatus to understand when was the booking canceled or when did the customer checked-out of the hotel</td>
+  </tr>
+</table>
+</div>
+
+<h3>Dataset summary and analysis</h3>
+
+```{r  ch1 }
+# Calculate the proportions of each hotel type
+hotel_counts <- table(hotel_row$hotel)
+hotel_percentages <- prop.table(hotel_counts) * 100
+
+# Create a data frame with hotel types and percentages
+hotel_percentages_df <- data.frame(
+  hotel = names(hotel_percentages),
+  percentage = hotel_percentages
+)
+options(repr.plot.width = 20, repr.plot.height = 15)
+
+# Create the pie chart using ggplot
+pie_chart <- ggplot(hotel_percentages_df, aes(x = "", y = hotel_percentages_df$percentage.Freq, fill = hotel)) +
+ geom_bar(stat = "identity", width = 1) +
+ geom_text(aes(label = paste0(round(hotel_percentages_df$percentage.Freq, 1), "%")), position = position_stack(vjust = 1.0), size = 4) + # Add data points
+  coord_polar("y", start = 0) +
+  labs(title = "Both Hotels data Contribution in Dataset", fill = "Hotel Type", x = NULL, y = NULL) +
+  scale_fill_manual(values = c("#47f5df", "#ea47f5")) + 
+  theme_minimal()
+# Print the pie chart
+print(pie_chart)
+
+```
+
+<div>Two hotels data taken for data set. 1. City Hotel and 2. Resort Hotel. City Hotel's data contribution is 66.4% while Resort Hotel's data contributed 33.6%.  </div>
+
+```{r ch2}
+
+#Data summary
+skim(hotel_row)
+
+```
+
++ There are 4 places where children values were missing (figured it out by reviewing `n_missing` field in above table.) which was defined as NA. 
++ There are total of 32 variables and 119390 rows of data of both hotels.
+
+<h5><b>Hotel's number of row : </b></h5>
+
+```{r ch3}
+# Hotel data group by column "hotel" 
+hotel_row %>%
+  group_by(hotel) %>%
+  summarise(count=n())
+
+```
+<h5><b>Hotel's Cancellation number :</b> [canceled (1) or not (0)]</h5>
+
+```{r ch4}
+# Hotel data group by column "is_canceled:
+
+hotel_row %>%
+  group_by(is_canceled) %>%
+    summarise(count=n())
+
+```
+
+
+<h5><b>Hotel's guest arrival yearly number :</b></h5>
+
+```{r ch5}
+
+hotel_row %>%
+  group_by(arrival_date_year) %>%
+  summarise(count=n())
+
+```
+<h5><b>Meal types ordered by Guests :</b> (for both hotels)</h5>
+```{r ch6}
+hotel_row %>%
+  group_by(meal) %>%
+  summarise(count=n())
+
+```
+<h5><b>Hotel's Country-wise guest number:</b></h5>
+
+```{r ch77}
+hotel_row %>%
+  group_by(country) %>%
+  summarise(count=n())
+
+```
+<h5><b>Hotel's Market Segment-wise number: </b></h5>
+
+```{r ch7}
+
+hotel_row %>%
+  group_by(market_segment) %>%
+  summarise(count=n())
+```
++ There are two rows where market_segment is undefined. <br>
+
+
+<h5><b>Hotel's Distribution channel-wise number: </b></h5> [Repeated guest (1) or not (0)]
+```{r ch8}
+
+hotel_row %>%
+  group_by(distribution_channel) %>%
+  summarise(count=n())
+```
++ There are five rows where distribution_channel is undefined.
+
+<h5><b>Hotel's Repeated business/booking number:</b></h5>
+```{r ch9}
+
+hotel_row %>%
+  group_by(is_repeated_guest) %>%
+  summarise(count=n())
+```
++ There are 3810 repeated booking happned (for both hotels)
+
+<h><b>Hotel's reserved room type-wise number:</b></h>
+
+```{r ch10}
+
+hotel_row %>%
+  group_by(reserved_room_type) %>%
+  summarise(count=n())
+```
+
+<h5><b>Hotel's reservation status and number :</b>(for both the hotels)</h5>
+```{r ch11}
+
+hotel_row %>%
+  group_by(reservation_status) %>%
+  summarise(count=n())
+```
+
+<h3><b>Data anomaly & cleaning:</b></h3> 
+1. In hotel dataset, there are 4 rows with NA value in "children" column. These rows can be deleted considering no impact.<br>
+
+```{r ch12}
+
+hotel_data_without_na <- hotel_row %>% 
+  na.omit(hotel_data)
+
+cat("Before data cleaning, Number of rows : ",nrow(hotel_row),"\n")
+cat("After data cleaning, Number of rows : ",nrow(hotel_data_without_na),"\n")
+
+```
+2. In the dataset, there are 180 rows where adults count is zero and reservation_status is check-out. This does not make sense.<br>
+
+```{r ch133}
+
+hotel_data_filtered <- hotel_data_without_na %>%
+  filter((hotel_data_without_na$adults == 0 & hotel_data_without_na$reservation_status == "Check-Out"))
+#nrow(hotel_data_filtered)
+
+```
+
+```{r ch13}
+hotel_temp <- subset(hotel_data_without_na, !(adults == 0 & reservation_status == "Check-Out"))
+#nrow(hotel_temp)
+
+``` 
+<br>
+
+```{r ch14}
+hotel_temp <- 
+  subset(hotel_data_without_na, hotel_data_without_na$adults == 0 & hotel_data_without_na$children == 0 & hotel_data_without_na$babies ==0)
+
+hotels_ultimate_data<- hotel_data_without_na %>% 
+  filter(adults +children +babies !=0)
+
+nrow(hotels_ultimate_data)
+
+```
+3. After cleaning, Data set have "119206" rows of both hotels.
+
+
+<div><h3>Data Exploration and Insights</h3></div>
+<div><h5><b>Guest type analysis:</b></h5> In hotel dataset, We can divide hotel guests into four major groups i.e. Adult, Adult with Children,Adult with babies and Adult with Children & Babies.<br>
+<b>Q. what is the distribution of these groups across the two types of hotels?</b>
+</div>
+
+
+```{r ch15}
+guest_groups <- hotels_ultimate_data %>% select(hotel, adults,children,babies) 
+
+guest_classification_group <-guest_groups %>% 
+  mutate(group= case_when(adults >  0 & children == 0 & babies == 0 ~ 'Adult',
+                          adults >  0 & children >  0 & babies == 0 ~ 'Adult_Children',
+                          adults >  0 & children == 0 & babies >  0 ~ 'Adult_Babies',
+                          adults >  0 & children >  0 & babies > 0 ~ 'Adult_Children_Babies',
+                          adults == 0 & children >  0 & babies == 0 ~ 'Children',
+                          adults == 0 & children == 0 & babies >  0 ~ 'Babies',
+                          adults == 0 & children >  0 & babies >  0 ~ 'Children_Babies'
+                          ))
+
+guest_classification_group %>% 
+  group_by(group) %>% 
+  summarise(count=n())
+
+```
+
+After classifying the guest into groups, I found that there were 109 rows for which Adult count was zero but children and babies had some value. This was also making no sense in real world that children and babies visited hotel without Adult.
+
+```{r ch16}
+
+guest_group_hotel <- guest_classification_group %>% select(hotel,group) 
+
+
+guest_group_hotel <- guest_group_hotel %>% group_by(hotel,group) %>% summarise(count=n())
+
+
+guest_group_CityHotel <- 
+  guest_group_hotel %>% 
+  filter(hotel == "City Hotel")
+
+guest_group_ResortHotel <- 
+  guest_group_hotel %>% 
+  filter(hotel == "Resort Hotel")
+
+skim(guest_group_CityHotel)
+skim(guest_group_ResortHotel)
+
+```
+
+```{r ch17}
+
+
+guest_classification_group %>% 
+  mutate(group = factor(group, levels=c("Adult","Adult_Children","Adult_Babies","Children","Adult_Children_Babies", "Children_Babies"))) %>% 
+  ggplot(aes(x = group,
+             y = stat(count),
+         fill = factor(hotel),
+         label = stat(count) ))+
+  geom_bar(position = position_dodge(),width = .5)+
+  geom_text(stat = "count",
+            position = position_dodge(1),
+            vjust = -0.5,
+            size = 3)+
+  labs(title = "Guest groups distribution by hotel", 
+       x = "Guest group",
+       y = "Count")+                               
+  theme(plot.title = element_text(hjust=0.5), 
+        axis.text.x = element_text(size = 7),   
+        axis.text.y = element_text(size = 7))+     
+  scale_fill_manual(values = c("#47f5df", "#ea47f5"),
+    name= "Hotel"
+  ) 
+        
+
+
+```
+<br>
+1. There are two main groups -"Adults" and "Adults with Children"which have most of data.<br>
+2. There are 220 children of City Hotel with no Adults.<br>
+3. There are 3 children_Babies and  with no Adults.<br>
+
+
+```{r ch18}
+
+print(guest_group_hotel)
+
+```
+
+<div><h5><b>Country vs Guest distribution of the two hotels</b><h5></div>
+
+```{r ch19}
+
+country_guest <- hotels_ultimate_data   %>% 
+                filter(is_canceled==0)  %>%
+                select(hotel, country)  %>%
+                group_by(hotel,country) %>%
+                summarise(count=n(),.groups = 'drop')
+
+
+```
+
+```{r ch20}
+country_guest_R_hotel <- country_guest %>% 
+  filter(hotel== "Resort Hotel") %>% 
+  arrange(desc(count))
+
+country_guest_R_hotel %>% 
+  arrange(desc(count))
+
+
+
+top_15_countries_r <- head(country_guest_R_hotel, 15)
+
+
+
+# Plotting
+ggplot(top_15_countries_r, aes(x = country, y = count)) +
+  geom_bar(stat = "identity", fill = "#ea47f5") +
+  labs(title = "Country-wise - Count of Guests in Resort Hotel",
+       x = "Country",
+       y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+
+
+```
+<br>
+1. Top five country of Resort hotel on the basis of visited guests are, Portugal (PRT), United Kingdom(GBR), Spain(ESP), Ireland (IRL) and France(FRA). <br>
+
+
+```{r ch21}
+country_guest_C_hotel <- country_guest %>% 
+  filter(hotel== "City Hotel") %>% 
+  arrange(desc(count))
+
+country_guest_C_hotel %>% 
+  arrange(desc(count))
+
+
+top_15_countries_c <- head(country_guest_C_hotel, 15)
+
+
+
+# Plotting
+ggplot(top_15_countries_c, aes(x = country, y = count)) +
+  geom_bar(stat = "identity", fill = "#47f5df") +
+  labs(title = "Country-wise - Count of Guests in City Hotel",
+       x = "Country",
+       y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+
+```
+
+<br>
+2. Top five country of City hotel on the basis of visited guests are Portugal (PRT),France(FRA), Germany (DEU) , United Kingdom(GBR), Spain(ESP) <br>
+
+<div><h5><b>Repeated Guest percentage of the two hotels:</b></h5></div>
+
+```{r ch22}
+repeated_rate <- hotels_ultimate_data %>% 
+  filter(is_canceled == 0) %>% 
+  select(hotel, is_repeated_guest)
+
+repeated_rate %>% 
+  group_by(hotel, is_repeated_guest) %>% 
+  summarise(count=n())
+
+```
+
+```{r ch23}
+
+City_rep_guest <- (1538/(1538+44546))*100
+
+cat(" In City Hotel, Repeated guest %: " , City_rep_guest ,"\n")
+
+Resort_rep_guest <- (1667/(1667+27260))*100
+
+cat(" In Resort Hotel, Repeated guest %: " , Resort_rep_guest ,"\n")
+
+```
+<div>Great!!! Hotel have their guests geography and repeated rate with above determined percentage so hotel business/stratigest can make their Strategy for their main customer geography and repeated business. Also they can make plan for the Ad-campaign.  </div>
+
+
+<div><h3>Reservation Pattern Analysis</h3></div>
+<div>In Hotel Dataset, Column “adr”(<b>Average Daily Rate</b>, is a numeric field) could be one of the key valuable continuous variables of the hotel room. adr - defined by dividing the sum of all lodging transactions by the total number of staying nights or the average paid amount for a room per night.It is key metric for observing the financial performance of a hotel. It is a key data point from the hotel dataset for hotel stakeholders like hotel managers, investigators etc. to evaluate revenue generation and pricing strategies for future business. Therefore, ADR “Average Daily Rate” can be considered a valuable continuous variable in hotel data analysis in my hotel dataset.</div>
+<h5>Sum of ADR of room type of hotels </h5>
+
+```{r ch24}
+#Select adr and associated variable 
+hotels_data_adr <- hotels_ultimate_data %>% select (hotel,adr,is_canceled,assigned_room_type,reservation_status_date, arrival_date_year, arrival_date_month)
+
+
+# Arranging hotel data accoring to adr(Average Daily Rate).
+hotels_data_adr <-hotels_data_adr[order(hotels_data_adr$adr,decreasing = TRUE),]
+#Display top 10 row for columns hotel and adr.
+#head(hotels_data_adr[,c("hotel","assigned_room_type","adr")],10)
+
+# Room type in hotel
+hotel_unique_room_type <- unique(hotels_data_adr$assigned_room_type)
+
+cat("Room type in hotel : ",hotel_unique_room_type)
+
+hotels_data_adr %>% 
+  group_by(hotel,assigned_room_type) %>% 
+  summarise(sum(adr))
+
+```
+<br>
+Room type: A and D are in trends and generating major revenue. 
+
+<div><h5>Number of room type booked of hotels </h5></div>
+
+```{r ch26}
+hotels_data_adr %>% 
+  group_by(hotel,assigned_room_type) %>% 
+  summarise(count=n())
+
+```
+<div><h5><b>Reservation Status Date Analysis</b></h5></div>
+<div><p><b>How does the distribution of reservation statuses vary over time?</b></p></div>
+```{r ch27}
+# Convert reservation_status_date to Date type
+hotels_ultimate_data$reservation_status_date <- as.Date(hotels_ultimate_data$reservation_status_date)
+
+# Plot the distribution of reservation status over time
+reservation_status_plot <- ggplot(hotels_ultimate_data, aes(x = reservation_status_date, fill = reservation_status)) +
+  geom_bar() +
+  labs(title = "Distribution of Reservation Status Over Time",
+       x = "Reservation Status Date",
+       y = "Count",
+       fill = "Reservation Status") +
+  theme_minimal()
+
+# Print the plot
+print(reservation_status_plot)
+
+```
+<div><b>Conclusion:</b> Reservation Status Date Analysis provides insights into the distribution and trends of reservation statuses over time.<br>
+1. By examining the distribution of reservation statuses over time, It can help business to identify patterns and trends in the booking activity of the hotel.<br>
+2. Analysis of reservation statuses over time can reveal insights into guest booking behavior, such as the frequency of cancellations, No-show, and successful Stay.<br>
+3. This analysis can also help business in <b>forecasting and planning</b> to anticipate demand fluctuations and implement strategies to optimize revenue and guest satisfaction.<br>
+</div>
+
+<div><h5>Hotels Analysis</h5></div>
+<div>Analysis Aspect :How do different hotels perform in terms of various metrics like "Hotel booking trends over time","Guest demographics analysis","Revenue analysis" etc. ?  </div>
+
+```{r ch28}
+
+
+
+#head(hotel_booking_trends)
+# Hotel booking trends over time
+hotel_booking_trends <- hotels_ultimate_data %>%
+  group_by(hotel, arrival_date_year) %>%
+  summarise(total_bookings = n()) %>%
+  ggplot(aes(x = factor(arrival_date_year), y = total_bookings, fill = hotel)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Hotel Booking Trends Over Time",
+       x = "Year",
+       y = "Total Bookings") +
+  theme_minimal()
+
+
+
+
+# Guest demographics analysis
+guest_demographics <- hotels_ultimate_data %>%
+  group_by(hotel, country) %>%
+  summarise(total_guests = n_distinct(customer_type)) %>%
+  ggplot(aes(x = country, y = total_guests, fill = hotel)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Guest Demographics Analysis",
+       x = "Country",
+       y = "Total Guests") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
+# Revenue analysis
+revenue_analysis <- hotels_ultimate_data %>%
+  group_by(hotel) %>%
+  summarise(total_revenue = sum(adr * (stays_in_weekend_nights + stays_in_week_nights))) %>%
+  ggplot(aes(x = hotel, y = total_revenue, fill = hotel)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Revenue Analysis by Hotel",
+       x = "Hotel",
+       y = "Total Revenue") +
+  theme_minimal()
+
+grid.arrange(hotel_booking_trends, revenue_analysis, nrow = 1)
+
+
+```
+<p>Observation : </p>
+1. City Hotel's revenue is higher than Resort Hotel.<br>
+2. City Hotel's booking count is higher than Resort Hotel. <br>
+3. The year 2016 was a good year for both the hotels. Management can further analyze the year 2016 for "Why did this year have more booking and revenue(Possible answer could be - if there were any special events around etc.)" <br>
+
+```{r ch29}
+
+# Filter top 10 countries for each hotel
+top_countries <- hotels_ultimate_data %>%
+  group_by(hotel, country) %>%
+  summarise(total_guests = n_distinct(customer_type)) %>%
+  arrange(hotel, desc(total_guests)) %>%
+  group_by(hotel) %>%
+  top_n(10)
+
+# Plot guest demographics analysis for top 10 countries
+guest_demographics_top10 <- top_countries %>%
+  ggplot(aes(x = country, y = total_guests, fill = hotel)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Guest Demographics Analysis (Top 10 Countries)",
+       x = "Country",
+       y = "Total Guests") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Print the plot
+print(guest_demographics_top10)
+
+```
+<div><p>Explanation: by analyzing above graph, here are some outlines.<br>
+1. <b>Hotel Booking Trends Over Time</b> of analyzing the trend in booking for both hotels over time. Here, City hotel is leading the trends in all three years. Although in 2017, Trends went little bit downside. <br>
+2. <b>Revenue Analysis</b> is a revenue metric which has been  drived by average daily rate (ADR), Stay number of night,total revenue for each hotel.City Hotel's revenue is higher than resort hotel.  <br>
+3. In <b>Guest Demographics graph</b>, We have drawn the top ten countries of guest of hotels. which help business to make the strategy for their guest welcome,stay , hotel arrangement and future strategy for them attract.
+<p>
+</div>
+
+<h5>Total ADR (Average Daily Rate) Analysis</h5>
+```{r ch30}
+
+# Calculate ADR (Average Daily Rate)
+hotels_ultimate_data$ADR <- hotels_ultimate_data$adr / hotels_ultimate_data$stays_in_weekend_nights + hotels_ultimate_data$stays_in_week_nights
+
+# Aggregate ADR by date
+ADR_by_date <- hotels_ultimate_data %>%
+  group_by(reservation_status_date) %>%
+  summarise(Total_ADR = mean(ADR, na.rm = TRUE))
+
+head(ADR_by_date,10)
+
+# Plot Total ADR over time
+ggplot(ADR_by_date, aes(x = reservation_status_date, y = Total_ADR)) +
+  geom_line() +
+  labs(title = "Total ADR Over Time", x = "Date", y = "Total ADR") +
+  theme_minimal()
+
+```
+
+
+
+```{r ch32}
+# Calculate Total ADR for each hotel
+total_adr <- hotels_ultimate_data %>%
+  group_by(hotel) %>%
+  summarise(total_adr = mean(adr, na.rm = TRUE))
+
+# Plot Total ADR for each hotel
+ggplot(total_adr, aes(x = hotel, y = total_adr, fill = hotel)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total ADR Analysis by Hotel",
+       x = "Hotel",
+       y = "Average Daily Rate (ADR)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+<div><p>Explanation:</p></div>
+<div>ADR value of City hotel is higher than Resort Hotel. </div>
+<div><b>Conclusion:</b> Total ADR (Average Daily Rate) over time Analysis and Trends can help business to identify the peak during certain periods, such as holidays or peak travel season or any event like game match. Hotelwise - Total ADR Analysis, Business can see insights into the performance and competitiveness of each hotel within the market landscape. </div>
+
+<div><h3>ADR boxplot</h3></div>
+<div><p>Question : How does the Average Daily Rate (ADR) vary across different reserved room types in the hotels?</p></div>
+
+```{r ch34}
+
+
+
+adr_boxplot_resort <- ggplot(hotel1, aes(x = reserved_room_type, y = adr, fill = factor(hotel))) +
+  geom_boxplot(position = position_dodge(),width = .7,  outlier.shape = NA) +
+  labs(title = "ADR Distribution by Reserved \n Room Type (Resort Hotel)",
+       x = "Reserved Room Type",
+       y = "ADR") +
+  scale_fill_discrete( name="Resort Hotel")+
+  theme(plot.title = element_text(hjust=0.5))
+
+adr_boxplot_city <- ggplot(hotel1, aes(x = reserved_room_type, y = adr, fill = factor(hotel))) +
+  geom_boxplot(position = position_dodge(),width = .7,  outlier.shape = NA) +
+  labs(title = "ADR Distribution by Reserved \n Room Type (City Hotel)",
+       x = "Reserved Room Type",
+       y = "ADR") +
+  scale_fill_manual( name="City Hotel", values = c("#47f5df"))+
+  theme(plot.title = element_text(hjust=0.5))
+
+# Print the boxplot
+#print(adr_boxplot)
+
+grid.arrange(adr_boxplot_city,adr_boxplot_resort, nrow = 1)
+
+
+```
+<div><p><b>Explanation and Conclusion:</b> The ADR Distribution by Reserved Room Type plot illustrates the distribution of Average Daily Rate (ADR) across various room types that guests have reserved in the hotels.Above graph is providing the insight on variability of ADR among different room types which helps to understand pricing and preferences of room type in guest choice.<br>
+This analysis will help hotel management to optimize the dynamic pricing and resource allocation according to the demand of room type.
+<p></div>
+
+<div><h5><b>Lead Time vs. ADR Analysis:</b></h5></div>
+<div>Analysis question: 1. How does the lead time (the number of days between booking and arrival) affect the average daily rate (ADR) of hotel bookings? <br></div>
+
+
+```{r lm_lead_adr_mod_1}
+# linear regression Model with adr and lead time 
+model_lm_adr_ld_tm <- lm(adr ~ lead_time, data = hotels_ultimate_data)
+
+
+coef(model_lm_adr_ld_tm)
+
+summary(model_lm_adr_ld_tm)
+
+
+
+
+#modelsummary(model_lm_adr_ld_tm)
+
+
+# Plot scatter for lm_lead_adr_mod_1
+lm_lead_adr_mod_1_scatter  <- ggplot(hotels_ultimate_data, aes(x = lead_time, y = adr)) +
+  geom_point() +  
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +  
+  labs(title = "Linear Regression:\nADR vs. Lead Time",
+       x = "Lead Time",
+       y = "ADR")
+
+#Plot Linner for lm_lead_adr_mod_1
+lm_lead_adr_mod_1_linner_2 <- ggplot(hotels_ultimate_data, aes(x = lead_time, y = adr)) +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  labs(title = "Linear Regression: \n ADR vs. Lead Time",
+       x = "Lead Time",
+       y = "ADR")
+
+
+#Arrange above two graph with single grid 
+grid.arrange(lm_lead_adr_mod_1_scatter,lm_lead_adr_mod_1_linner_2, nrow = 1)
+
+
+```
+<div> <p><b>Explanation: <br> &#10004; Interpretation :</b> The Intercept is 105.168 (estimated ADR) when lead time is zero which is unlikely hood in our hotel bookings case.It might not have practical interpretation since it is unlikely to have a lead time zero.</p>
+<p><b>&#10004; Significance :</b>The Coefficients for lead time is -0.031. It indicates the estimated change in the average daily rate for a room increase in lead time. In our case,it suggests that for each additional day of lead time, the average daily rate decreases by $0.02983 which is unlike in realworld. Here low p-value: < 2.2e-16 is indicating that model is statistically significant for variable leadtime and adr relationship.</p>
+<P><b>&#10004; Conclusion :</b> According to above result, there is a significant negative relationship between lead time and ARD. It is indicating that as lead time increase, ADR tends to decrease. </p>
+
+</div>
+
+<div><b>2. How does lead time , the month of arrival , special car parking request collectively influence the average daily rate (ADR) of hotel bookings? </b></div>><br>
+
+```{r lm_lead_adr_mod_2}
+
+#Build a linear regression model with adr , lead_time and arrival_date_month,required_car_parking_spaces as predictors
+lm_lead_adr_mod_2 <- lm(adr ~ lead_time + arrival_date_day_of_month+required_car_parking_spaces, data = hotels_ultimate_data)
+# Calculates the predicted average daily rate (ADR) for each observation in the dataset using linner regression model i.e which is lm_lead_adr_mod_2
+hotels_ultimate_data$predicted_adr <- predict(lm_lead_adr_mod_2, newdata = hotels_ultimate_data)
+
+print("*************************************")
+summary(lm_lead_adr_mod_2)
+print("*************************************")
+coef(lm_lead_adr_mod_2)
+print("*************************************")
+vif(lm_lead_adr_mod_2)
+print("*************************************")
+ncvTest(lm_lead_adr_mod_2)
+print("*************************************")
+
+# Plot scatter for lm_lead_adr_mod_2
+lm_lead_adr_mod_2_scatter <- ggplot(hotels_ultimate_data, aes(x = predicted_adr, y = adr)) +
+  geom_point() +  # Plot the observed values
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add linear regression line
+  labs(title = "Linear Regression:\n Observed vs. Predicted ADR",
+       x = "Predicted ADR",
+       y = "Observed ADR")
+#Plot Linner for lm_lead_adr_mod_2
+lm_lead_adr_mod_2_linner <- ggplot(hotels_ultimate_data, aes(x = predicted_adr, y = adr)) +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +  
+  labs(title = "Linear Regression:\n Observed vs. Predicted ADR",
+       x = "Predicted ADR",
+       y = "Observed ADR")
+
+#Arrange above two graph with single grid 
+grid.arrange(lm_lead_adr_mod_2_scatter,lm_lead_adr_mod_2_linner, nrow = 1)
+
+```
+<div>
+<p><b>Explanation : </b> + In above model,We have created a linear regression model between lead time along with arrival month ,car parking request on ARD (This type of scenario is significant where car parking is one of the major factor for hotel booking.) <br> 
++ Then calculated the predicted values(hotels_ultimate_data$predicted_adr) based on a fitted model which is lm_lead_adr_mod_2 for or each observation of dataset.
+</p>
+<p><b>&#10004; Interpretation : </b>The Intercept is 101.537 (estimated ADR) when all predictor variables - lead time, arrival date day of month, and required car parking spaces are zero. (This Intercept value  101.537 is almost same of above model 105.168 ) </p>
+<p><b>&#10004; Significance :</b> Cofficient value for lead time is -0.028022 (almost same of above model -.030).Cofficient for arrival_date_day_of_month is 0.172 menas for each day in the month of arrival, ADR might have impact of .172 and Cofficient for required_car_parking_spaces  is 10.137 menas if guest have need of car parking then ADR may have impact of 10.137 unit price.     </p>
+
+<p><b>&#10004; Conclusion  :</b>  Lead time along with month of arrival, and special car parking request collectivly have a significant (as p-value: < 2.2e-16 is low) but relatively small influence on the ADR of hotel bookings. Lead time has negative impact and car parking request has positive impact on ADR whereas the month of arrival has a very smaller positive effect on ADR. Overall impact of these factors is very small on ADR. </p>
+
+<p><b>Recommendations:</b><br>
+<p>1. According to the above linear regression model outcome, It is recommended for optimizing their hotel revenue that they should implement dynamic pricing to offer better rates for those customers who book the room in advance.<br>
+2. The linear regression model can also be used in forecasting future demand and this information can be used for formulating pricing strategies so that hotel revenue can be optimized.</p>
+
+
+</div>
+
+<H5><b>Lead time vs. Cancellation Analysis</b></H5>
+Analysis Question: How does the lead time ( "adr - The number of days between booking and arrival") impact the likelihood of cancellation in hotel bookings?
+
+```{r lead_time_can}
+hotel_city_lead_cancellation <- hotels_ultimate_data %>% 
+  filter(hotel== "City Hotel")
+
+hotel_resort_lead_cancellation <- hotels_ultimate_data %>% 
+  filter(hotel== "Resort Hotel")
+
+nrow(hotel_city_lead_cancellation)
+
+sm_model_hotel_city_lead_cancellation <- lm(lead_time~is_canceled,hotel_city_lead_cancellation)
+print("***********************************************************************")
+summary(sm_model_hotel_city_lead_cancellation)
+print("***********************************************************************")
+sm_model_hotel_resort_lead_cancellation <- lm(lead_time~is_canceled,hotel_resort_lead_cancellation)
+print("***********************************************************************")
+summary(sm_model_hotel_resort_lead_cancellation)
+print("***********************************************************************")
+
+
+lead_time_cancel_plot_city <- ggplot(hotel_city_lead_cancellation, aes(x = lead_time, fill= factor(is_canceled), label = stat(count))) +
+  geom_density(alpha = 0.5) +  # Adjust alpha for transparency
+  labs(title = "City Hotel:Lead Time vs. Cancellation ",
+       x = "Lead Time",
+       y = "Density",
+       color = "Hotel") +
+  scale_fill_discrete(
+    name = "Cancelled",
+    breaks = c("0", "1"),
+    label = c("Not Cancelled", "Cancelled")
+  )+
+  theme_minimal()
+
+
+lead_time_cancel_plot_resort <- ggplot(hotel_resort_lead_cancellation, aes(x = lead_time, fill= factor(is_canceled), label = stat(count))) +
+  geom_density(alpha = 0.5) +  # Adjust alpha for transparency
+  labs(title = "Resort Hotel: Lead Time vs. Cancellation",
+       x = "Lead Time",
+       y = "Density",
+       color = "Hotel") +
+  scale_fill_discrete(
+    name = "Cancelled",
+    breaks = c("0", "1"),
+    label = c("Not Cancelled", "Cancelled")
+  )+
+  theme_minimal()
+
+# Print the scatter plot
+#print(lead_time_cancel_plot)
+
+grid.arrange(lead_time_cancel_plot_city, lead_time_cancel_plot_resort, nrow = 2)
+```
+
+<div><p><b>Explanation:</b><br>
+1.Lead time and Cancellation analysis determine the relationship between lead time and likely hood of Cancellation in hotel booking.<br>
+2. The <b>intercept</b> is 80.854 tells that during this estimated lead time when a booking may not canceled in city hotel where as This value is 78.851 for resort hotel.
+3. <b>Significance</b> Both coefficients are highly significant because p-value  < 2.2e-16 (small then 0.05).
+</p>
+<p><b>Conclusion:</b> 
+1. For City hotel, "Canceled booking tend" to have a lead time approximately 69 days longer than non-canceled. bookings<br>
+2. For resort hotel, "Canceled booking tend" to have a lead time approximately 49 days longer than non-canceled. bookings.<br>
+3. By understanding the relationship of cancellation status and duration can help hotel management for defining their cancelation policy ,  resource arranagment and other strategy (like booking insurence etc.). 
+  Overall, this analysis may help hotel management to make strategic decisions to enhance booking , revenue and optimize the resources.
+</p>
+</div>
+```{r ch37}
+#Factor 
+str(hotels_ultimate_data)
+```
+
+
+
+```{r ch39}
+
+can_percentage <- 44224/(44224+75166)
+
+can_percentage <- can_percentage * 100
+
+
+cat(" Percentage of hotel booking : ",can_percentage)
+
+# Perform logistic regression
+logit_model <- glm(is_canceled ~ lead_time + previous_cancellations + adults + children + babies + is_repeated_guest, 
+                   data = hotels_ultimate_data, 
+                   family = binomial)
+
+# Summary of the logistic regression model
+summary(logit_model)
+
+```
+<div>
+<p><b>Explanation: Since in our database, Hotel booking cancellation percentage is 37.04% which is quite high. Here we have tried to see pattern in cancellation, lead time , history of canceling, the number of people in the booking and repeated guest.</b></p>
+<p><b>Coefficients</b> Each variable has different value of coefficient which mean different impact of these variable on cencellation.Although babies and is_repeated_guest  has negative coefficient value -8.42 and -2.16 which means there is less likely hood of booking cencelation. </p>
+<p>AIC (Akaike Information Criterion) value of  141402 is a measure of how well the model fits the data while penalizing for complexity. Lower AIC values indicate better fitting models relative to other models being compared. </p>
+<p><b>Conclusion:</b><br>
+1. Lead time and previous cancellations have positive effects on the likelihood of cancellation.<br>
+2. The number of adults, children, and babies also influences cancellation likelihood positively.<br>
+3. Being a repeated guest reduces the likelihood of cancellation.
+4. This analysis give insight of factor which may have affect in booking cencellation which can help hotel management to make strategies to minimize cancellations and optimize revenue.
+</p>
+</div>
+
+
+
+
+
+<br>
+<br>
+<H4><b>Thank you!!!</b></H4>
